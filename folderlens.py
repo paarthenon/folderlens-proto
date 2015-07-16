@@ -1,6 +1,9 @@
 import os
 import sys
-def makelinks(dest_root, source_root):
+
+Directory = namedtuple('Dictionary',['name','dirs','files'])
+def get_mappings(dest_root, source_root):
+	mapping_list = [] # [(source, destination),...]
 	for current_path, dirs, files in os.walk(source_root):
 		for file in files:
 			source_path = os.path.join(current_path, file)
@@ -8,10 +11,18 @@ def makelinks(dest_root, source_root):
 			relative_path = os.path.relpath(source_path, source_root)
 			dest_path = os.path.join(dest_root, relative_path)
 
-			#ensure directory for symlink exists
-			os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-			#create symlink
-			os.symlink(source_path, dest_path)
+			mapping_list.append((source_path, dest_path));
+
+def merge_mappings(list_of_lists):
+	for list in list_of_lists:
+		for source, dest in list:
+
+def write_symlinks(list):
+	for source_path, dest_path in list:
+		#ensure directory for symlink exists
+		os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+		#create symlink
+		os.symlink(source_path, dest_path)
 
 def main(argv):
 	#stop with the indexes
