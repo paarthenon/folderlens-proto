@@ -9,15 +9,13 @@ def makelinks(dest_root, source_root):
 			dest_path = os.path.join(dest_root, relative_path)
 
 			#ensure directory for symlink exists
-			os.makedirs(os.path.dirname(dest_path), exists_ok=True)
+			os.makedirs(os.path.dirname(dest_path), exist_ok=True)
 			#create symlink
 			os.symlink(source_path, dest_path)
 
 def main(argv):
-	for root, dirs, files in os.walk(argv[1]):
-		print(root)
-		print(dirs)
-		print(files)
+	#stop with the indexes
+	makelinks(argv[2],argv[1])
 
 if __name__ == "__main__":
 	main(sys.argv)
