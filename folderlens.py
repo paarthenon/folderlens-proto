@@ -1,9 +1,11 @@
 import os
 import sys
+import json
 
 def get_mappings(dest_root, source_root):
 	link_mapping = {} # dest, source mapping
 	for current_path, dirs, files in os.walk(source_root):
+		print(current_path)
 		for file in files:
 			source_path = os.path.join(current_path, file)
 
@@ -35,18 +37,24 @@ def write_symlinks(dict):
 		os.symlink(source_path, dest_path)
 
 def main(argv):
-	out_dir = argv[1]
-	in_dirs = [argv[2], argv[3]]
+	config_name = "default.cfg.json"
 
-	#stop with the indexes eventually
-	mappings = [get_mappings(out_dir, path) for path in in_dirs]
-	merged, duplicates = merge_mappings(mappings)
+	if(len(argv) > 1):
+		config_name = argv[1]
 
-	if len(duplicates) > 0:
-		print("Conflicts found")
-		print(duplicates)
-		
-	write_symlinks(merged)
+	with open(config_name) as cfg:
+		config = json.load(cfg)
+
+		output_dir = config['output_dir']
+		input_dirs = config['input_dirs']
+
+		mappings = [get_mappings(output_dir, path) for path in input_dirs]
+		merged, duplicates = merge_mappings(mappings)
+		if len(duplicates) > 0:
+			print("Conflicts found")
+			print(duplicates)
+
+		write_symlinks(merged)
 
 if __name__ == "__main__":
 	main(sys.argv)
